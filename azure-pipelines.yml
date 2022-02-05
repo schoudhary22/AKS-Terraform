@@ -1,0 +1,21 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'youtube-app-service-connection'
+    backendAzureRmResourceGroupName: 'azure-k8stest'
+    backendAzureRmStorageAccountName: 'kubestorage001'
+    backendAzureRmContainerName: 'kubecontainer'
+    backendAzureRmKey: 'terraform.tfstate'
