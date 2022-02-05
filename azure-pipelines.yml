@@ -19,3 +19,9 @@ steps:
     backendAzureRmStorageAccountName: 'kubestorage001'
     backendAzureRmContainerName: 'kubecontainer'
     backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'youtube-app-service-connection'
