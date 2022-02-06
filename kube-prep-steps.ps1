@@ -8,15 +8,17 @@ $spnclientid = "xxxxxx"
 $clientidkvsecretname = "xxxxxx"
 $spnclientsecret = "xxxxxx"
 $spnkvsecretname = "xxxxx"
-$spnname = "xxxxxx"
+$spobjectID = "xxxxx"
+$userobjectid = "xxxxx"
 
 
 #### Create Key Vault
 
 New-AzResourceGroup -Name $keyvaultrg -Location $location
 
-New-AzKeyVault -Name $keyvaultname -ResourceGroupName "myResourceGroup" -Location $location
+New-AzKeyVault -Name $keyvaultname -ResourceGroupName $keyvaultrg -Location $location
 
+Set-AzKeyVaultAccessPolicy -VaultName $keyvaultname -UserPrincipalName $userobjectid -PermissionsToSecrets get,set,delete,list
 
 #### create an ssh key for setting up password-less login between agent nodes.
 
