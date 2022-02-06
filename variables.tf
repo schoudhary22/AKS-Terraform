@@ -2,11 +2,30 @@ variable "aks_vnet_name" {
     type = string
 }
 
-#KeyVault Resource Group and KeyVaultName
 variable "keyvault_rg" {
   type    = string
 }
 variable "keyvault_name" {
+  type    = string
+}
+
+variable "sshkvsecret" {
+  type    = string
+}
+
+variable "clientidkvsecret" {
+  type    = string
+}
+
+variable "vnetcidr" {
+  type    = list
+}
+
+variable "subnetcidr" {
+  type    = list
+}
+
+variable "spnkvsecret" {
   type    = string
 }
 
