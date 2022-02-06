@@ -6,6 +6,7 @@ $spnclientid = "zzzz"
 $clientidkvsecretname = "cccc"
 $spnclientsecret = "ssss"
 $spnkvsecretname = "kkkk"
+$spnname = "nnnn"
 
 
 #create an ssh key for setting up password-less login between agent nodes.
@@ -34,3 +35,8 @@ Set-AzKeyVaultSecret -VaultName $keyvaultname -Name $clientidkvsecretname -Secre
 $Secret = ConvertTo-SecureString -String $spnclientsecret -AsPlainText -Force
 
 Set-AzKeyVaultSecret -VaultName $keyvaultname -Name $spnkvsecretname -SecretValue $Secret
+
+
+#### Provide Keyvault secret access to SPN using Keyvault access policy
+
+Set-AzKeyVaultAccessPolicy -VaultName $keyvaultname -ServicePrincipalName $spnname -PermissionsToSecrets Get,Set
