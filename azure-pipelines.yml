@@ -15,7 +15,7 @@ steps:
     provider: 'azurerm'
     command: 'init'
     backendServiceArm: 'youtube-app-service-connection'
-    backendAzureRmResourceGroupName: 'azure-k8stest'
+    backendAzureRmResourceGroupName: 'Lab-RG'
     backendAzureRmStorageAccountName: 'kubestorage001'
     backendAzureRmContainerName: 'kubecontainer'
     backendAzureRmKey: 'terraform.tfstate'
