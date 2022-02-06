@@ -17,9 +17,9 @@ admin_username = "aksadmin"
 kubernetes_version = "1.21.7"
 
 agent_pools = object({
-      name            = string
-      count           = number
-      vm_size         = string
-      os_disk_size_gb = string
+      name            = "pool1"
+      count           = 2
+      vm_size         = "Standard_D2_v2"
+      os_disk_size_gb = "30"
     }
   )
