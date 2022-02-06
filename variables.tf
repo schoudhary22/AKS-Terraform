@@ -6,9 +6,11 @@ variable "aks_vnet_name" {
 #KeyVault Resource Group and KeyVaultName
 variable "keyvault_rg" {
   type    = string
+  default = "Lab-RG"
 }
 variable "keyvault_name" {
   type    = string
+  default = "demo-azurekv"
 }
 
 variable "azure_region" {
