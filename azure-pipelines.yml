@@ -22,11 +22,18 @@ steps:
   inputs:
     command: 'init'
     allowTelemetryCollection: false
-- task: TerraformTaskV2@2
+
+- task: TerraformCLI@0
   inputs:
-    provider: 'azurerm'
     command: 'plan'
-    environmentServiceNameAzureRM: 'youtube-app-service-connection'
+    environmentServiceName: 'youtube-app-service-connection'
+    allowTelemetryCollection: false
+
+# - task: TerraformTaskV2@2
+#   inputs:
+#     provider: 'azurerm'
+#     command: 'plan'
+#     environmentServiceNameAzureRM: 'youtube-app-service-connection'
 
 # - task: TerraformTaskV2@2
 #   inputs:
