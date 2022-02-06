@@ -50,4 +50,4 @@ Set-AzKeyVaultSecret -VaultName $keyvaultname -Name $spnkvsecretname -SecretValu
 
 #### Provide Keyvault secret access to SPN using Keyvault access policy
 
-Set-AzKeyVaultAccessPolicy -VaultName $keyvaultname -ServicePrincipalName $userobjectid -PermissionsToSecrets Get,Set
+Set-AzKeyVaultAccessPolicy -VaultName $keyvaultname -ServicePrincipalName $spobjectID -PermissionsToSecrets Get,Set
