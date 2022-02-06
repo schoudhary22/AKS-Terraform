@@ -28,7 +28,7 @@ resource "azurerm_subnet" "aks_subnet" {
   name                 = "aks_subnet"
   resource_group_name  = azurerm_resource_group.aks_demo_rg.name
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
-  address_prefix       = "10.1.0.0/16"
+  address_prefixes       = "10.1.0.0/16"
 }
 
 
@@ -42,21 +42,13 @@ resource "azurerm_kubernetes_cluster" "aks_k2" {
   location            = azurerm_resource_group.aks_demo_rg.location
   resource_group_name = azurerm_resource_group.aks_demo_rg.name
   dns_prefix          = var.dns_name
-  kubernetes_version  = var.kubernetes_version
 
-  dynamic "agent_pool_profile" {
-    for_each = var.agent_pools
-    iterator = pool
-    content {
-      name            = pool.value.name
-      count           = pool.value.count
-      vm_size         = pool.value.vm_size
-      os_type         = pool.value.os_type
-      os_disk_size_gb = pool.value.os_disk_size_gb
-      type            = "VirtualMachineScaleSets"
-      max_pods        = 100
-      vnet_subnet_id  = azurerm_subnet.aks_subnet.id
-    }
+
+  default_node_pool {
+    name            = pool.value.name
+    node_count      = pool.value.count
+    vm_size         = pool.value.vm_size
+    os_disk_size_gb = 30
   }
 
   linux_profile {
