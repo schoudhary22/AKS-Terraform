@@ -1,37 +1,59 @@
-variable "agent_count" {
-    default = 2
+variable "aks_vnet_name" {
+    type = string
+    default = "aksvnet"
 }
 
-variable "ssh_public_key" {
-    default = "~/.ssh/id_rsa.pub"
+#KeyVault Resource Group and KeyVaultName
+variable "keyvault_rg" {
+  type    = string
+}
+variable "keyvault_name" {
+  type    = string
 }
 
-variable "dns_prefix" {
-    default = "k8stest"
+variable "azure_region" {
+  type    = string
+  default = "eastus"
 }
 
-variable cluster_name {
-    default = "k8stest"
+#  Resource Group Name
+variable "resource_group" {
+  type    = string
+  default = "AKSCluster-RG"
 }
 
-variable resource_group_name {
-    default = "azure-k8stest"
+# AKS Cluster name
+variable "cluster_name" {
+  type    = string
+  default = "AKSTerraform"
 }
 
-variable location {
-    default = "Australia East"
+#AKS DNS name
+variable "dns_name" {
+  type    = string
+  default = "AKSTerraform"
 }
 
-variable log_analytics_workspace_name {
-    default = "testLogAnalyticsWorkspaceName"
+variable "admin_username" {
+  type    = string
+  default = "aksadmin"
 }
 
-# refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions
-variable log_analytics_workspace_location {
-    default = "australiaeast"
+# Specify a valid kubernetes version
+variable "kubernetes_version" {
+  type    = string
+  default = "1.14.3"
 }
 
-# refer https://azure.microsoft.com/pricing/details/monitor/ for log analytics pricing 
-variable log_analytics_workspace_sku {
-    default = "PerGB2018"
+#AKS Agent pools
+variable "agent_pools" {
+  default = [
+    {
+      name            = "pool1"
+      count           = 3
+      vm_size         = "Standard_D1_v2"
+      os_type         = "Linux"
+      os_disk_size_gb = "30"
+    }
+  ]
 }
