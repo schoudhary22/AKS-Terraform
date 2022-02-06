@@ -19,24 +19,22 @@ steps:
 #     backendAzureRmContainerName: 'kubecontainer'
 #     backendAzureRmKey: 'terraform.tfstate'
 - task: TerraformCLI@0
+  displayName: Terraform Init
   inputs:
     command: 'init'
     allowTelemetryCollection: false
 
 - task: TerraformCLI@0
+  displayName: Terraform Plan
   inputs:
     command: 'plan'
     environmentServiceName: 'youtube-app-service-connection'
     allowTelemetryCollection: false
 
-# - task: TerraformTaskV2@2
-#   inputs:
-#     provider: 'azurerm'
-#     command: 'plan'
-#     environmentServiceNameAzureRM: 'youtube-app-service-connection'
+- task: TerraformCLI@0
+  displayName: Terraform Apply
+  inputs:
+    command: 'apply'
+    environmentServiceName: 'youtube-app-service-connection'
+    allowTelemetryCollection: false
 
-# - task: TerraformTaskV2@2
-#   inputs:
-#     provider: 'azurerm'
-#     command: 'apply'
-#     environmentServiceNameAzureRM: 'youtube-app-service-connection'
