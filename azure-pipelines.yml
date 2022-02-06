@@ -9,24 +9,27 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: TerraformTaskV2@2
+# - task: TerraformTaskV2@2
+#   inputs:
+#     provider: 'azurerm'
+#     command: 'init'
+#     backendServiceArm: 'youtube-app-service-connection'
+#     backendAzureRmResourceGroupName: 'Lab-RG'
+#     backendAzureRmStorageAccountName: 'kubestorage001'
+#     backendAzureRmContainerName: 'kubecontainer'
+#     backendAzureRmKey: 'terraform.tfstate'
+- task: TerraformCLI@0
   inputs:
-    provider: 'azurerm'
     command: 'init'
-    backendServiceArm: 'youtube-app-service-connection'
-    backendAzureRmResourceGroupName: 'Lab-RG'
-    backendAzureRmStorageAccountName: 'kubestorage001'
-    backendAzureRmContainerName: 'kubecontainer'
-    backendAzureRmKey: 'terraform.tfstate'
-
+    allowTelemetryCollection: false
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
     command: 'plan'
     environmentServiceNameAzureRM: 'youtube-app-service-connection'
 
-- task: TerraformTaskV2@2
-  inputs:
-    provider: 'azurerm'
-    command: 'apply'
-    environmentServiceNameAzureRM: 'youtube-app-service-connection'
+# - task: TerraformTaskV2@2
+#   inputs:
+#     provider: 'azurerm'
+#     command: 'apply'
+#     environmentServiceNameAzureRM: 'youtube-app-service-connection'
