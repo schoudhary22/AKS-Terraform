@@ -13,7 +13,7 @@ variable "keyvault_name" {
 
 variable "azure_region" {
   type    = string
-  default = "eastus"
+  default = "australiaeast"
 }
 
 #  Resource Group Name
@@ -42,7 +42,7 @@ variable "admin_username" {
 # Specify a valid kubernetes version
 variable "kubernetes_version" {
   type    = string
-  default = "1.14.3"
+  default = "1.21.7"
 }
 
 #AKS Agent pools
@@ -50,7 +50,7 @@ variable "agent_pools" {
   default = [
     {
       name            = "pool1"
-      count           = 3
+      count           = 2
       vm_size         = "Standard_D1_v2"
       os_type         = "Linux"
       os_disk_size_gb = "30"
