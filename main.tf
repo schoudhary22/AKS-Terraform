@@ -1,75 +1,90 @@
-resource "azurerm_resource_group" "k8s" {
-    name     = var.resource_group_name
-    location = var.location
+data "azurerm_key_vault" "terraform_vault" {
+  name                = var.keyvault_name
+  resource_group_name = var.keyvault_rg
 }
 
-resource "random_id" "log_analytics_workspace_name_suffix" {
-    byte_length = 8
+data "azurerm_key_vault_secret" "ssh_public_key" {
+  name         = "LinuxSSHPubKey"
+  key_vault_id = data.azurerm_key_vault.terraform_vault.id
 }
 
-resource "azurerm_log_analytics_workspace" "test" {
-    # The WorkSpace name has to be unique across the whole of azure, not just the current subscription/tenant.
-    name                = "${var.log_analytics_workspace_name}-${random_id.log_analytics_workspace_name_suffix.dec}"
-    location            = var.log_analytics_workspace_location
-    resource_group_name = azurerm_resource_group.k8s.name
-    sku                 = var.log_analytics_workspace_sku
+data "azurerm_key_vault_secret" "spn_id" {
+  name         = "spn-id"
+  key_vault_id = data.azurerm_key_vault.terraform_vault.id
+}
+data "azurerm_key_vault_secret" "spn_secret" {
+  name         = "spn-secret"
+  key_vault_id = data.azurerm_key_vault.terraform_vault.id
 }
 
-resource "azurerm_log_analytics_solution" "test" {
-    solution_name         = "ContainerInsights"
-    location              = azurerm_log_analytics_workspace.test.location
-    resource_group_name   = azurerm_resource_group.k8s.name
-    workspace_resource_id = azurerm_log_analytics_workspace.test.id
-    workspace_name        = azurerm_log_analytics_workspace.test.name
+resource "azurerm_virtual_network" "aks_vnet" {
+  name                = var.aks_vnet_name
+  resource_group_name = azurerm_resource_group.aks_demo_rg.name
+  location            = azurerm_resource_group.aks_demo_rg.location
+  address_space       = ["10.0.0.0/12"]
+} 
 
-    plan {
-        publisher = "Microsoft"
-        product   = "OMSGallery/ContainerInsights"
-    }
+resource "azurerm_subnet" "aks_subnet" {
+  name                 = "aks_subnet"
+  resource_group_name  = azurerm_resource_group.aks_demo_rg.name
+  virtual_network_name = azurerm_virtual_network.aks_vnet.name
+  address_prefix       = "10.1.0.0/16"
 }
 
-resource "azurerm_kubernetes_cluster" "k8s" {
-    name                = var.cluster_name
-    location            = azurerm_resource_group.k8s.location
-    resource_group_name = azurerm_resource_group.k8s.name
-    dns_prefix          = var.dns_prefix
 
-    linux_profile {
-        admin_username = "ubuntu"
+resource "azurerm_resource_group" "aks_demo_rg" {
+  name     = var.resource_group
+  location = var.azure_region
+}
 
-        ssh_key {
-            key_data = file(var.ssh_public_key)
-        }
+resource "azurerm_kubernetes_cluster" "aks_k2" {
+  name                = var.cluster_name
+  location            = azurerm_resource_group.aks_demo_rg.location
+  resource_group_name = azurerm_resource_group.aks_demo_rg.name
+  dns_prefix          = var.dns_name
+  kubernetes_version  = var.kubernetes_version
+
+  dynamic "agent_pool_profile" {
+    for_each = var.agent_pools
+    iterator = pool
+    content {
+      name            = pool.value.name
+      count           = pool.value.count
+      vm_size         = pool.value.vm_size
+      os_type         = pool.value.os_type
+      os_disk_size_gb = pool.value.os_disk_size_gb
+      type            = "VirtualMachineScaleSets"
+      max_pods        = 100
+      vnet_subnet_id  = azurerm_subnet.aks_subnet.id
     }
+  }
 
-    default_node_pool {
-        name            = "agentpool"
-        node_count      = var.agent_count
-        vm_size         = "Standard_D2_v2"
+  linux_profile {
+    admin_username = var.admin_username
+    ssh_key {
+      key_data = data.azurerm_key_vault_secret.ssh_public_key.value
     }
+  }
 
-    # service_principal {
-    #     client_id     = var.client_id
-    #     client_secret = var.client_secret
-    # }
+  network_profile {
+    network_plugin     = "azure"
+    network_policy     = "azure"     # Options are calico or azure - only if network plugin is set to azure
+    dns_service_ip     = "172.16.0.10" # Required when network plugin is set to azure, must be in the range of service_cidr and above 1
+    docker_bridge_cidr = "172.17.0.1/16"
+    service_cidr       = "172.16.0.0/16" # Must not overlap any address from the VNEt
+  }
 
-    identity { 
-        type = "SystemAssigned" 
-    }
 
-    addon_profile {
-        oms_agent {
-        enabled                    = true
-        log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
-        }
-    }
+  role_based_access_control {
+    enabled = true
+  }
 
-    network_profile {
-        load_balancer_sku = "Standard"
-        network_plugin = "kubenet"
-    }
+  service_principal {
+    client_id     = data.azurerm_key_vault_secret.spn_id.value
+    client_secret = data.azurerm_key_vault_secret.spn_secret.value
+  }
 
-    tags = {
-        Environment = "Development"
-    }
+  tags = {
+    Environment = "Demo"
+  }
 }
