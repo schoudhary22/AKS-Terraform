@@ -27,3 +27,9 @@ steps:
     provider: 'azurerm'
     command: 'plan'
     environmentServiceNameAzureRM: 'youtube-app-service-connection'
+
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'youtube-app-service-connection'
