@@ -4,16 +4,16 @@ data "azurerm_key_vault" "terraform_vault" {
 }
 
 data "azurerm_key_vault_secret" "ssh_public_key" {
-  name         = "LinuxSSHPubKey"
+  name         = var.sshkvsecret
   key_vault_id = data.azurerm_key_vault.terraform_vault.id
 }
 
 data "azurerm_key_vault_secret" "spn_id" {
-  name         = "spn-id"
+  name         = var.clientidkvsecret
   key_vault_id = data.azurerm_key_vault.terraform_vault.id
 }
 data "azurerm_key_vault_secret" "spn_secret" {
-  name         = "spn-secret"
+  name         = var.spnkvsecret
   key_vault_id = data.azurerm_key_vault.terraform_vault.id
 }
 
@@ -21,26 +21,26 @@ resource "azurerm_virtual_network" "aks_vnet" {
   name                = var.aks_vnet_name
   resource_group_name = azurerm_resource_group.aks_demo_rg.name
   location            = azurerm_resource_group.aks_demo_rg.location
-  address_space       = ["10.0.0.0/12"]
+  address_space       = var.vnetcidr
 } 
 
 resource "azurerm_subnet" "aks_subnet" {
   name                 = "aks_subnet"
   resource_group_name  = azurerm_resource_group.aks_demo_rg.name
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
-  address_prefixes       = ["10.1.0.0/16"]
+  address_prefixes       = var.subnetcidr
 }
 
 
-resource "azurerm_resource_group" "aks_demo_rg" {
+resource "azurerm_resource_group" "aks_rg" {
   name     = var.resource_group
   location = var.azure_region
 }
 
-resource "azurerm_kubernetes_cluster" "aks_k2" {
+resource "azurerm_kubernetes_cluster" "aks_cluster" {
   name                = var.cluster_name
-  location            = azurerm_resource_group.aks_demo_rg.location
-  resource_group_name = azurerm_resource_group.aks_demo_rg.name
+  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
   dns_prefix          = var.dns_name
 
 
@@ -57,15 +57,6 @@ resource "azurerm_kubernetes_cluster" "aks_k2" {
       key_data = data.azurerm_key_vault_secret.ssh_public_key.value
     }
   }
-
-  network_profile {
-    network_plugin     = "azure"
-    network_policy     = "azure"     # Options are calico or azure - only if network plugin is set to azure
-    dns_service_ip     = "172.16.0.10" # Required when network plugin is set to azure, must be in the range of service_cidr and above 1
-    docker_bridge_cidr = "172.17.0.1/16"
-    service_cidr       = "172.16.0.0/16" # Must not overlap any address from the VNEt
-  }
-
 
   role_based_access_control {
     enabled = true
