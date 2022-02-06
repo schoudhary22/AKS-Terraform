@@ -12,7 +12,7 @@ subnetcidr = ["10.0.0.0/25"]
 
 keyvault_rg = "keyvault-rg"
 
-keyvault_name = "azuredemo-kv"
+keyvault_name = "shailender-kv"
 
 azure_region = "australiaeast"
 
