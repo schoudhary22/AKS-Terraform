@@ -1,18 +1,28 @@
 aks_vnet_name = "aksvnet"
 
-keyvault_rg = "Lab-RG"
+sshkvsecret = "akssshpubkey"
+
+clientidkvsecret = "spn-id"
+
+spnkvsecret = "spn-secret"
+
+vnetcidr = ["10.0.0.0/24"]
+
+subnetcidr = ["10.0.0.0/25"]
+
+keyvault_rg = "keyvault-rg"
 
 keyvault_name = "demo-azurekv"
 
 azure_region = "australiaeast"
 
-resource_group = "AKSCluster-RG"
+resource_group = "aksdemocluster-rg"
 
-cluster_name = "AKSTerraform"
+cluster_name = "aksdemocluster"
 
-dns_name = "AKSTerraform"
+dns_name = "aksdemocluster"
 
-admin_username = "aksadmin"
+admin_username = "aksuser"
 
 kubernetes_version = "1.21.7"
 
