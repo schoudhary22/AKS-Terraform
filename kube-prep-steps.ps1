@@ -1,15 +1,24 @@
 #### Parameters
 
 $keyvaultname = "xxxxx"
-$sshkeysecret = "yyyy"
-$spnclientid = "zzzz"
-$clientidkvsecretname = "cccc"
-$spnclientsecret = "ssss"
-$spnkvsecretname = "kkkk"
-$spnname = "nnnn"
+$location = "xxxxx"
+$keyvaultrg = "xxxxxx"
+$sshkeysecret = "xxxxx"
+$spnclientid = "xxxxxx"
+$clientidkvsecretname = "xxxxxx"
+$spnclientsecret = "xxxxxx"
+$spnkvsecretname = "xxxxx"
+$spnname = "xxxxxx"
 
 
-#create an ssh key for setting up password-less login between agent nodes.
+#### Create Key Vault
+
+New-AzResourceGroup -Name $keyvaultrg -Location $location
+
+New-AzKeyVault -Name $keyvaultname -ResourceGroupName "myResourceGroup" -Location $location
+
+
+#### create an ssh key for setting up password-less login between agent nodes.
 
 ssh-keygen  -f ~/.ssh/id_rsa_terraform
 
